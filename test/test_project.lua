@@ -2,7 +2,7 @@ local root = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h:h")
 package.path = root .. "/test/?.lua;" .. root .. "/lua/?.lua;" .. root .. "/lua/?/init.lua;" .. package.path
 
 local h = require("test_helper")
-local project = require("opencode.project")
+local project = require("opcode.project")
 
 h.run("get_root returns CWD when no API config and no .git found", function()
    local cwd = "/tmp/some/project"

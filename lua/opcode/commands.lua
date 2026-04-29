@@ -1,15 +1,15 @@
 local M = {}
-local api = require("opencode.api")
-local state = require("opencode.state")
-local format = require("opencode.format")
-local project = require("opencode.project")
+local api = require("opcode.api")
+local state = require("opcode.state")
+local format = require("opcode.format")
+local project = require("opcode.project")
 
 function M.connect(config)
    local cmd = config.command:gsub("{port}", tostring(config.port))
    vim.system(cmd, {}, function(obj)
       if obj.code ~= 0 then
          vim.notify(
-            "opencode.nvim: failed to launch terminal: " .. (obj.stderr or ""),
+            "opcode.nvim: failed to launch terminal: " .. (obj.stderr or ""),
             vim.log.levels.ERROR
          )
       end
@@ -24,7 +24,7 @@ end
 function M.list_sessions(config)
    api.list_sessions(config.hostname, config.port, function(err, sessions)
       if err then
-         vim.notify("opencode.nvim: failed to fetch sessions", vim.log.levels.ERROR)
+         vim.notify("opcode.nvim: failed to fetch sessions", vim.log.levels.ERROR)
          return
       end
 
@@ -54,12 +54,12 @@ function M.create_session(config, title)
    title = title or default_title()
    api.create_session(config.hostname, config.port, title, function(err, result)
       if err then
-         vim.notify("opencode.nvim: failed to create session", vim.log.levels.ERROR)
+         vim.notify("opcode.nvim: failed to create session", vim.log.levels.ERROR)
          return
       end
       state.set_selected_session(result.id)
       vim.notify(
-         string.format("opencode.nvim: created session '%s' (%s)", result.title, result.id),
+         string.format("opcode.nvim: created session '%s' (%s)", result.title, result.id),
          vim.log.levels.INFO
       )
    end)
@@ -68,7 +68,7 @@ end
 local function require_session()
     local session_id = state.get_selected_session()
     if not session_id then
-        vim.notify("opencode.nvim: no session selected", vim.log.levels.ERROR)
+        vim.notify("opcode.nvim: no session selected", vim.log.levels.ERROR)
         return nil
     end
     return session_id
@@ -90,7 +90,7 @@ function M.send_file(config)
 
     local rel_path = relative_path(config)
     if not rel_path then
-        vim.notify("opencode.nvim: no file in current buffer", vim.log.levels.ERROR)
+        vim.notify("opcode.nvim: no file in current buffer", vim.log.levels.ERROR)
         return
     end
 
@@ -98,11 +98,11 @@ function M.send_file(config)
 
     api.append_prompt(config.hostname, config.port, session_id, text, function(err, _)
         if err then
-            vim.notify("opencode.nvim: failed to send file path", vim.log.levels.ERROR)
+            vim.notify("opcode.nvim: failed to send file path", vim.log.levels.ERROR)
             return
         end
         if config.notify ~= false then
-            vim.notify("opencode.nvim: sent " .. rel_path, vim.log.levels.INFO)
+            vim.notify("opcode.nvim: sent " .. rel_path, vim.log.levels.INFO)
         end
     end)
 end
@@ -116,7 +116,7 @@ function M.send_line(config)
 
     local rel_path = relative_path(config)
     if not rel_path then
-        vim.notify("opencode.nvim: no file in current buffer", vim.log.levels.ERROR)
+        vim.notify("opcode.nvim: no file in current buffer", vim.log.levels.ERROR)
         return
     end
 
@@ -124,11 +124,11 @@ function M.send_line(config)
 
     api.append_prompt(config.hostname, config.port, session_id, text, function(err, _)
         if err then
-            vim.notify("opencode.nvim: failed to send line", vim.log.levels.ERROR)
+            vim.notify("opcode.nvim: failed to send line", vim.log.levels.ERROR)
             return
         end
         if config.notify ~= false then
-            vim.notify("opencode.nvim: sent " .. rel_path .. "#L" .. row, vim.log.levels.INFO)
+            vim.notify("opcode.nvim: sent " .. rel_path .. "#L" .. row, vim.log.levels.INFO)
         end
     end)
 end
@@ -141,13 +141,13 @@ function M.send_selection(config)
     local end_pos = vim.fn.getpos("'>")
     local lines = vim.fn.getregion(start_pos, end_pos)
     if not lines or #lines == 0 then
-        vim.notify("opencode.nvim: no selection", vim.log.levels.ERROR)
+        vim.notify("opcode.nvim: no selection", vim.log.levels.ERROR)
         return
     end
 
     local rel_path = relative_path(config)
     if not rel_path then
-        vim.notify("opencode.nvim: no file in current buffer", vim.log.levels.ERROR)
+        vim.notify("opcode.nvim: no file in current buffer", vim.log.levels.ERROR)
         return
     end
 
@@ -158,11 +158,11 @@ function M.send_selection(config)
 
     api.append_prompt(config.hostname, config.port, session_id, text, function(err, _)
         if err then
-            vim.notify("opencode.nvim: failed to send selection", vim.log.levels.ERROR)
+            vim.notify("opcode.nvim: failed to send selection", vim.log.levels.ERROR)
             return
         end
         if config.notify ~= false then
-            vim.notify("opencode.nvim: sent " .. rel_path .. "#L" .. start_line .. "-" .. end_line, vim.log.levels.INFO)
+            vim.notify("opcode.nvim: sent " .. rel_path .. "#L" .. start_line .. "-" .. end_line, vim.log.levels.INFO)
         end
     end)
 end

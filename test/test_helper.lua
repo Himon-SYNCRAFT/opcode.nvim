@@ -41,7 +41,7 @@ function M.assert_no_notify(level)
 end
 
 function M.reset_plugin()
-   package.loaded["opencode"] = nil
+   package.loaded["opcode"] = nil
 end
 
 function M.valid_config(overrides)

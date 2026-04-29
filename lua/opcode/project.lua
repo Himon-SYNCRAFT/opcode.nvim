@@ -20,16 +20,16 @@ local function try_api_root(config)
       return vim.system({ "curl", "-s", "-m", "2", url }):wait()
    end)
    if not ok then
-      vim.notify("opencode.nvim: project API request failed", vim.log.levels.WARN)
+      vim.notify("opcode.nvim: project API request failed", vim.log.levels.WARN)
       return nil
    end
    if result.code ~= 0 then
-      vim.notify("opencode.nvim: project API returned non-zero exit", vim.log.levels.WARN)
+      vim.notify("opcode.nvim: project API returned non-zero exit", vim.log.levels.WARN)
       return nil
    end
    local decode_ok, data = pcall(vim.json.decode, result.stdout)
    if not decode_ok or not data or not data.root then
-      vim.notify("opencode.nvim: project API response invalid", vim.log.levels.WARN)
+      vim.notify("opcode.nvim: project API response invalid", vim.log.levels.WARN)
       return nil
    end
    return data.root

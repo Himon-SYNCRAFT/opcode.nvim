@@ -2,7 +2,7 @@ local root = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h:h")
 package.path = root .. "/test/?.lua;" .. root .. "/lua/?.lua;" .. root .. "/lua/?/init.lua;" .. package.path
 
 local h = require("test_helper")
-local format = require("opencode.format")
+local format = require("opcode.format")
 
 h.run("format_file returns relative path as-is", function()
    local result = format.format_file("src/main.lua")

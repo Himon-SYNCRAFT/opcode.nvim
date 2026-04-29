@@ -1,6 +1,6 @@
 # CONTEXT
 
-## Project: opencode.nvim
+## Project: opcode.nvim
 
 Neovim plugin for communicating with OpenCode server via HTTP REST API.
 
@@ -27,7 +27,7 @@ User runs OpenCode in external terminal, plugin communicates via HTTP to `hostna
 
 ### Configuration
 ```lua
-require('opencode').setup({
+require('opcode').setup({
   port = 4096,                    -- OpenCode server port
   hostname = '127.0.0.1',         -- OpenCode server host
   command = 'alacritty -e opencode --port {port}',  -- Terminal command template
@@ -77,7 +77,7 @@ print("hello")
 ### Architecture
 - Neovim 0.11+ required
 - Async HTTP via `vim.system()` + `curl` (no external deps)
-- Modular structure: `lua/opencode/{init,api,commands,util}.lua`
+- Modular structure: `lua/opcode/{init,api,commands,util}.lua`
 - No auth in MVP
 - No auto-focus after send
 

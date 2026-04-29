@@ -2,7 +2,7 @@ local root = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h:h")
 package.path = root .. "/test/?.lua;" .. root .. "/lua/?.lua;" .. root .. "/lua/?/init.lua;" .. package.path
 
 local h = require("test_helper")
-local api = require("opencode.api")
+local api = require("opcode.api")
 
 local function mock_system(response)
    local orig = vim.system

@@ -18,15 +18,15 @@ end
 
 h.run("connect launches terminal command with port substituted", function()
    h.reset_plugin()
-   package.loaded["opencode.commands"] = nil
+   package.loaded["opcode.commands"] = nil
 
    local stop_capture = mock_system_capture({ code = 0, stderr = "" })
-   require("opencode").setup({
+   require("opcode").setup({
       port = 4096,
       hostname = "127.0.0.1",
       command = "alacritty -e opencode --port {port}",
    })
-   require("opencode").connect()
+   require("opcode").connect()
    local cmd = stop_capture()
 
    assert(cmd ~= nil, "expected vim.system to be called")
@@ -38,16 +38,16 @@ end)
 
 h.run("connect notifies on command error", function()
    h.reset_plugin()
-   package.loaded["opencode.commands"] = nil
+   package.loaded["opcode.commands"] = nil
 
    local stop_capture = mock_system_capture({ code = 1, stderr = "command not found" })
    local done = h.capture_notify()
-   require("opencode").setup({
+   require("opcode").setup({
       port = 4096,
       hostname = "127.0.0.1",
       command = "alacritty -e opencode --port {port}",
    })
-   require("opencode").connect()
+   require("opcode").connect()
    stop_capture()
    done()
 
@@ -56,9 +56,9 @@ end)
 
 h.run("setup registers OpenCodeConnect command", function()
    h.reset_plugin()
-   package.loaded["opencode.commands"] = nil
+   package.loaded["opcode.commands"] = nil
 
-   require("opencode").setup({
+   require("opcode").setup({
       port = 4096,
       hostname = "127.0.0.1",
       command = "alacritty -e opencode --port {port}",
@@ -73,19 +73,19 @@ end)
 
 h.run("create_session calls api and updates selected_session_id on success", function()
    h.reset_plugin()
-   package.loaded["opencode.commands"] = nil
-   package.loaded["opencode.state"] = nil
-   package.loaded["opencode.api"] = nil
+   package.loaded["opcode.commands"] = nil
+   package.loaded["opcode.state"] = nil
+   package.loaded["opcode.api"] = nil
 
-   local api = require("opencode.api")
+   local api = require("opcode.api")
    local orig_create = api.create_session
    api.create_session = function(hostname, port, title, cb)
       cb(nil, { id = "sess-new123", title = title })
    end
 
    local done = h.capture_notify()
-   local commands = require("opencode.commands")
-   local sstate = require("opencode.state")
+   local commands = require("opcode.commands")
+   local sstate = require("opcode.state")
    commands.create_session({ hostname = "127.0.0.1", port = 4096 }, "My Session")
 
    api.create_session = orig_create
@@ -100,11 +100,11 @@ end)
 
 h.run("create_session uses CWD name as title when none provided", function()
    h.reset_plugin()
-   package.loaded["opencode.commands"] = nil
-   package.loaded["opencode.state"] = nil
-   package.loaded["opencode.api"] = nil
+   package.loaded["opcode.commands"] = nil
+   package.loaded["opcode.state"] = nil
+   package.loaded["opcode.api"] = nil
 
-   local api = require("opencode.api")
+   local api = require("opcode.api")
    local captured_title
    local orig_create = api.create_session
    api.create_session = function(hostname, port, title, cb)
@@ -113,7 +113,7 @@ h.run("create_session uses CWD name as title when none provided", function()
    end
 
    local done = h.capture_notify()
-   local commands = require("opencode.commands")
+   local commands = require("opcode.commands")
    commands.create_session({ hostname = "127.0.0.1", port = 4096 })
 
    api.create_session = orig_create
@@ -127,19 +127,19 @@ end)
 
 h.run("create_session notifies error and does not update state on API failure", function()
    h.reset_plugin()
-   package.loaded["opencode.commands"] = nil
-   package.loaded["opencode.state"] = nil
-   package.loaded["opencode.api"] = nil
+   package.loaded["opcode.commands"] = nil
+   package.loaded["opcode.state"] = nil
+   package.loaded["opcode.api"] = nil
 
-   local api = require("opencode.api")
+   local api = require("opcode.api")
    local orig_create = api.create_session
    api.create_session = function(hostname, port, title, cb)
       cb({ message = "Network error", code = 7 }, nil)
    end
 
    local done = h.capture_notify()
-   local commands = require("opencode.commands")
-   local sstate = require("opencode.state")
+   local commands = require("opcode.commands")
+   local sstate = require("opcode.state")
    commands.create_session({ hostname = "127.0.0.1", port = 4096 }, "Fail Session")
 
    api.create_session = orig_create
@@ -154,9 +154,9 @@ end)
 
 h.run("setup registers OpenCodeCreateSession command", function()
    h.reset_plugin()
-   package.loaded["opencode.commands"] = nil
+   package.loaded["opcode.commands"] = nil
 
-   require("opencode").setup(h.valid_config())
+   require("opcode").setup(h.valid_config())
 
    local cmds = vim.api.nvim_get_commands({})
    assert(
@@ -167,16 +167,16 @@ end)
 
 h.run("send_file errors when no session selected", function()
    h.reset_plugin()
-   package.loaded["opencode.commands"] = nil
-   package.loaded["opencode.state"] = nil
-   package.loaded["opencode.api"] = nil
-   package.loaded["opencode.project"] = nil
+   package.loaded["opcode.commands"] = nil
+   package.loaded["opcode.state"] = nil
+   package.loaded["opcode.api"] = nil
+   package.loaded["opcode.project"] = nil
 
-   local sstate = require("opencode.state")
+   local sstate = require("opcode.state")
    sstate.clear_selected_session()
 
    local done = h.capture_notify()
-   local commands = require("opencode.commands")
+   local commands = require("opcode.commands")
    commands.send_file(h.valid_config())
 
    done()
@@ -185,16 +185,16 @@ end)
 
 h.run("send_file sends relative path via append_prompt on success", function()
    h.reset_plugin()
-   package.loaded["opencode.commands"] = nil
-   package.loaded["opencode.state"] = nil
-   package.loaded["opencode.api"] = nil
-   package.loaded["opencode.project"] = nil
-   package.loaded["opencode.format"] = nil
+   package.loaded["opcode.commands"] = nil
+   package.loaded["opcode.state"] = nil
+   package.loaded["opcode.api"] = nil
+   package.loaded["opcode.project"] = nil
+   package.loaded["opcode.format"] = nil
 
-   local sstate = require("opencode.state")
+   local sstate = require("opcode.state")
    sstate.set_selected_session("sess-xyz")
 
-   local api = require("opencode.api")
+   local api = require("opcode.api")
    local orig_append = api.append_prompt
    local captured_args = {}
    api.append_prompt = function(hostname, port, session_id, text, cb)
@@ -202,7 +202,7 @@ h.run("send_file sends relative path via append_prompt on success", function()
       cb(nil, {})
    end
 
-   local project = require("opencode.project")
+   local project = require("opcode.project")
    local orig_get_root = project.get_root
    project.get_root = function()
       return "/home/user/project"
@@ -214,7 +214,7 @@ h.run("send_file sends relative path via append_prompt on success", function()
       return orig_expand(expr)
    end
 
-   local commands = require("opencode.commands")
+   local commands = require("opcode.commands")
    commands.send_file(h.valid_config())
 
    api.append_prompt = orig_append
@@ -230,22 +230,22 @@ end)
 
 h.run("send_file notifies error on API failure", function()
    h.reset_plugin()
-   package.loaded["opencode.commands"] = nil
-   package.loaded["opencode.state"] = nil
-   package.loaded["opencode.api"] = nil
-   package.loaded["opencode.project"] = nil
-   package.loaded["opencode.format"] = nil
+   package.loaded["opcode.commands"] = nil
+   package.loaded["opcode.state"] = nil
+   package.loaded["opcode.api"] = nil
+   package.loaded["opcode.project"] = nil
+   package.loaded["opcode.format"] = nil
 
-   local sstate = require("opencode.state")
+   local sstate = require("opcode.state")
    sstate.set_selected_session("sess-xyz")
 
-   local api = require("opencode.api")
+   local api = require("opcode.api")
    local orig_append = api.append_prompt
    api.append_prompt = function(hostname, port, session_id, text, cb)
       cb({ message = "connection refused" }, nil)
    end
 
-   local proj = require("opencode.project")
+   local proj = require("opcode.project")
    local orig_get_root = proj.get_root
    proj.get_root = function() return "/home/user/project" end
 
@@ -256,7 +256,7 @@ h.run("send_file notifies error on API failure", function()
    end
 
    local done = h.capture_notify()
-   local commands = require("opencode.commands")
+   local commands = require("opcode.commands")
    commands.send_file(h.valid_config())
 
    api.append_prompt = orig_append
@@ -269,20 +269,20 @@ end)
 
 h.run("send_file shows INFO notification with path on success", function()
    h.reset_plugin()
-   package.loaded["opencode.commands"] = nil
-   package.loaded["opencode.state"] = nil
-   package.loaded["opencode.api"] = nil
-   package.loaded["opencode.project"] = nil
-   package.loaded["opencode.format"] = nil
+   package.loaded["opcode.commands"] = nil
+   package.loaded["opcode.state"] = nil
+   package.loaded["opcode.api"] = nil
+   package.loaded["opcode.project"] = nil
+   package.loaded["opcode.format"] = nil
 
-   local sstate = require("opencode.state")
+   local sstate = require("opcode.state")
    sstate.set_selected_session("sess-abc")
 
-   local api = require("opencode.api")
+   local api = require("opcode.api")
    local orig_append = api.append_prompt
    api.append_prompt = function(_, _, _, _, cb) cb(nil, {}) end
 
-   local proj = require("opencode.project")
+   local proj = require("opcode.project")
    local orig_get_root = proj.get_root
    proj.get_root = function() return "/proj" end
 
@@ -293,7 +293,7 @@ h.run("send_file shows INFO notification with path on success", function()
    end
 
    local done = h.capture_notify()
-   local commands = require("opencode.commands")
+   local commands = require("opcode.commands")
    commands.send_file(h.valid_config())
 
    api.append_prompt = orig_append
@@ -306,20 +306,20 @@ end)
 
 h.run("send_file skips INFO notification when notify disabled", function()
    h.reset_plugin()
-   package.loaded["opencode.commands"] = nil
-   package.loaded["opencode.state"] = nil
-   package.loaded["opencode.api"] = nil
-   package.loaded["opencode.project"] = nil
-   package.loaded["opencode.format"] = nil
+   package.loaded["opcode.commands"] = nil
+   package.loaded["opcode.state"] = nil
+   package.loaded["opcode.api"] = nil
+   package.loaded["opcode.project"] = nil
+   package.loaded["opcode.format"] = nil
 
-   local sstate = require("opencode.state")
+   local sstate = require("opcode.state")
    sstate.set_selected_session("sess-abc")
 
-   local api = require("opencode.api")
+   local api = require("opcode.api")
    local orig_append = api.append_prompt
    api.append_prompt = function(_, _, _, _, cb) cb(nil, {}) end
 
-   local proj = require("opencode.project")
+   local proj = require("opcode.project")
    local orig_get_root = proj.get_root
    proj.get_root = function() return "/proj" end
 
@@ -330,7 +330,7 @@ h.run("send_file skips INFO notification when notify disabled", function()
    end
 
    local done = h.capture_notify()
-   local commands = require("opencode.commands")
+   local commands = require("opcode.commands")
    commands.send_file(h.valid_config({ notify = false }))
 
    api.append_prompt = orig_append
@@ -343,9 +343,9 @@ end)
 
 h.run("setup registers OpenCodeSendFile command", function()
     h.reset_plugin()
-    package.loaded["opencode.commands"] = nil
+    package.loaded["opcode.commands"] = nil
 
-    require("opencode").setup(h.valid_config())
+    require("opcode").setup(h.valid_config())
 
     local cmds = vim.api.nvim_get_commands({})
     assert(
@@ -356,17 +356,17 @@ end)
 
 h.run("send_selection errors when no session selected", function()
     h.reset_plugin()
-    package.loaded["opencode.commands"] = nil
-    package.loaded["opencode.state"] = nil
-    package.loaded["opencode.api"] = nil
-    package.loaded["opencode.project"] = nil
-    package.loaded["opencode.format"] = nil
+    package.loaded["opcode.commands"] = nil
+    package.loaded["opcode.state"] = nil
+    package.loaded["opcode.api"] = nil
+    package.loaded["opcode.project"] = nil
+    package.loaded["opcode.format"] = nil
 
-    local sstate = require("opencode.state")
+    local sstate = require("opcode.state")
     sstate.clear_selected_session()
 
     local done = h.capture_notify()
-    local commands = require("opencode.commands")
+    local commands = require("opcode.commands")
     commands.send_selection(h.valid_config())
 
     done()
@@ -375,13 +375,13 @@ end)
 
 h.run("send_selection errors when no visual selection", function()
     h.reset_plugin()
-    package.loaded["opencode.commands"] = nil
-    package.loaded["opencode.state"] = nil
-    package.loaded["opencode.api"] = nil
-    package.loaded["opencode.project"] = nil
-    package.loaded["opencode.format"] = nil
+    package.loaded["opcode.commands"] = nil
+    package.loaded["opcode.state"] = nil
+    package.loaded["opcode.api"] = nil
+    package.loaded["opcode.project"] = nil
+    package.loaded["opcode.format"] = nil
 
-    local sstate = require("opencode.state")
+    local sstate = require("opcode.state")
     sstate.set_selected_session("sess-abc")
 
     local orig_getregion = vim.fn.getregion
@@ -390,7 +390,7 @@ h.run("send_selection errors when no visual selection", function()
     end
 
     local done = h.capture_notify()
-    local commands = require("opencode.commands")
+    local commands = require("opcode.commands")
     commands.send_selection(h.valid_config())
 
     vim.fn.getregion = orig_getregion
@@ -400,16 +400,16 @@ end)
 
 h.run("send_selection sends formatted selection via append_prompt", function()
     h.reset_plugin()
-    package.loaded["opencode.commands"] = nil
-    package.loaded["opencode.state"] = nil
-    package.loaded["opencode.api"] = nil
-    package.loaded["opencode.project"] = nil
-    package.loaded["opencode.format"] = nil
+    package.loaded["opcode.commands"] = nil
+    package.loaded["opcode.state"] = nil
+    package.loaded["opcode.api"] = nil
+    package.loaded["opcode.project"] = nil
+    package.loaded["opcode.format"] = nil
 
-    local sstate = require("opencode.state")
+    local sstate = require("opcode.state")
     sstate.set_selected_session("sess-sel")
 
-    local api = require("opencode.api")
+    local api = require("opcode.api")
     local orig_append = api.append_prompt
     local captured_args = {}
     api.append_prompt = function(hostname, port, session_id, text, cb)
@@ -417,7 +417,7 @@ h.run("send_selection sends formatted selection via append_prompt", function()
         cb(nil, {})
     end
 
-    local proj = require("opencode.project")
+    local proj = require("opcode.project")
     local orig_get_root = proj.get_root
     proj.get_root = function() return "/home/user/project" end
 
@@ -439,7 +439,7 @@ h.run("send_selection sends formatted selection via append_prompt", function()
         return orig_getpos(mark)
     end
 
-    local commands = require("opencode.commands")
+    local commands = require("opcode.commands")
     commands.send_selection(h.valid_config())
 
     api.append_prompt = orig_append
@@ -463,22 +463,22 @@ end)
 
 h.run("send_selection notifies error on API failure", function()
     h.reset_plugin()
-    package.loaded["opencode.commands"] = nil
-    package.loaded["opencode.state"] = nil
-    package.loaded["opencode.api"] = nil
-    package.loaded["opencode.project"] = nil
-    package.loaded["opencode.format"] = nil
+    package.loaded["opcode.commands"] = nil
+    package.loaded["opcode.state"] = nil
+    package.loaded["opcode.api"] = nil
+    package.loaded["opcode.project"] = nil
+    package.loaded["opcode.format"] = nil
 
-    local sstate = require("opencode.state")
+    local sstate = require("opcode.state")
     sstate.set_selected_session("sess-sel")
 
-    local api = require("opencode.api")
+    local api = require("opcode.api")
     local orig_append = api.append_prompt
     api.append_prompt = function(_, _, _, _, cb)
         cb({ message = "connection refused" }, nil)
     end
 
-    local proj = require("opencode.project")
+    local proj = require("opcode.project")
     local orig_get_root = proj.get_root
     proj.get_root = function() return "/home/user/project" end
 
@@ -499,7 +499,7 @@ h.run("send_selection notifies error on API failure", function()
     end
 
     local done = h.capture_notify()
-    local commands = require("opencode.commands")
+    local commands = require("opcode.commands")
     commands.send_selection(h.valid_config())
 
     api.append_prompt = orig_append
@@ -514,20 +514,20 @@ end)
 
 h.run("send_selection shows INFO notification with path and line range on success", function()
     h.reset_plugin()
-    package.loaded["opencode.commands"] = nil
-    package.loaded["opencode.state"] = nil
-    package.loaded["opencode.api"] = nil
-    package.loaded["opencode.project"] = nil
-    package.loaded["opencode.format"] = nil
+    package.loaded["opcode.commands"] = nil
+    package.loaded["opcode.state"] = nil
+    package.loaded["opcode.api"] = nil
+    package.loaded["opcode.project"] = nil
+    package.loaded["opcode.format"] = nil
 
-    local sstate = require("opencode.state")
+    local sstate = require("opcode.state")
     sstate.set_selected_session("sess-abc")
 
-    local api = require("opencode.api")
+    local api = require("opcode.api")
     local orig_append = api.append_prompt
     api.append_prompt = function(_, _, _, _, cb) cb(nil, {}) end
 
-    local proj = require("opencode.project")
+    local proj = require("opcode.project")
     local orig_get_root = proj.get_root
     proj.get_root = function() return "/proj" end
 
@@ -548,7 +548,7 @@ h.run("send_selection shows INFO notification with path and line range on succes
     end
 
     local done = h.capture_notify()
-    local commands = require("opencode.commands")
+    local commands = require("opcode.commands")
     commands.send_selection(h.valid_config())
 
     api.append_prompt = orig_append
@@ -563,20 +563,20 @@ end)
 
 h.run("send_selection skips INFO notification when notify disabled", function()
     h.reset_plugin()
-    package.loaded["opencode.commands"] = nil
-    package.loaded["opencode.state"] = nil
-    package.loaded["opencode.api"] = nil
-    package.loaded["opencode.project"] = nil
-    package.loaded["opencode.format"] = nil
+    package.loaded["opcode.commands"] = nil
+    package.loaded["opcode.state"] = nil
+    package.loaded["opcode.api"] = nil
+    package.loaded["opcode.project"] = nil
+    package.loaded["opcode.format"] = nil
 
-    local sstate = require("opencode.state")
+    local sstate = require("opcode.state")
     sstate.set_selected_session("sess-abc")
 
-    local api = require("opencode.api")
+    local api = require("opcode.api")
     local orig_append = api.append_prompt
     api.append_prompt = function(_, _, _, _, cb) cb(nil, {}) end
 
-    local proj = require("opencode.project")
+    local proj = require("opcode.project")
     local orig_get_root = proj.get_root
     proj.get_root = function() return "/proj" end
 
@@ -597,7 +597,7 @@ h.run("send_selection skips INFO notification when notify disabled", function()
     end
 
     local done = h.capture_notify()
-    local commands = require("opencode.commands")
+    local commands = require("opcode.commands")
     commands.send_selection(h.valid_config({ notify = false }))
 
     api.append_prompt = orig_append
@@ -612,9 +612,9 @@ end)
 
 h.run("setup registers OpenCodeSendSelection command", function()
     h.reset_plugin()
-    package.loaded["opencode.commands"] = nil
+    package.loaded["opcode.commands"] = nil
 
-    require("opencode").setup(h.valid_config())
+    require("opcode").setup(h.valid_config())
 
     local cmds = vim.api.nvim_get_commands({})
     assert(
@@ -625,17 +625,17 @@ end)
 
 h.run("send_line errors when no session selected", function()
     h.reset_plugin()
-    package.loaded["opencode.commands"] = nil
-    package.loaded["opencode.state"] = nil
-    package.loaded["opencode.api"] = nil
-    package.loaded["opencode.project"] = nil
-    package.loaded["opencode.format"] = nil
+    package.loaded["opcode.commands"] = nil
+    package.loaded["opcode.state"] = nil
+    package.loaded["opcode.api"] = nil
+    package.loaded["opcode.project"] = nil
+    package.loaded["opcode.format"] = nil
 
-    local sstate = require("opencode.state")
+    local sstate = require("opcode.state")
     sstate.clear_selected_session()
 
     local done = h.capture_notify()
-    local commands = require("opencode.commands")
+    local commands = require("opcode.commands")
     commands.send_line(h.valid_config())
 
     done()
@@ -644,16 +644,16 @@ end)
 
 h.run("send_line sends formatted line via append_prompt", function()
     h.reset_plugin()
-    package.loaded["opencode.commands"] = nil
-    package.loaded["opencode.state"] = nil
-    package.loaded["opencode.api"] = nil
-    package.loaded["opencode.project"] = nil
-    package.loaded["opencode.format"] = nil
+    package.loaded["opcode.commands"] = nil
+    package.loaded["opcode.state"] = nil
+    package.loaded["opcode.api"] = nil
+    package.loaded["opcode.project"] = nil
+    package.loaded["opcode.format"] = nil
 
-    local sstate = require("opencode.state")
+    local sstate = require("opcode.state")
     sstate.set_selected_session("sess-ln")
 
-    local api = require("opencode.api")
+    local api = require("opcode.api")
     local orig_append = api.append_prompt
     local captured_args = {}
     api.append_prompt = function(hostname, port, session_id, text, cb)
@@ -661,7 +661,7 @@ h.run("send_line sends formatted line via append_prompt", function()
         cb(nil, {})
     end
 
-    local proj = require("opencode.project")
+    local proj = require("opcode.project")
     local orig_get_root = proj.get_root
     proj.get_root = function() return "/home/user/project" end
 
@@ -677,7 +677,7 @@ h.run("send_line sends formatted line via append_prompt", function()
     local orig_get_current_line = vim.api.nvim_get_current_line
     vim.api.nvim_get_current_line = function() return "local x = 1" end
 
-    local commands = require("opencode.commands")
+    local commands = require("opcode.commands")
     commands.send_line(h.valid_config())
 
     api.append_prompt = orig_append
@@ -701,22 +701,22 @@ end)
 
 h.run("send_line notifies error on API failure", function()
     h.reset_plugin()
-    package.loaded["opencode.commands"] = nil
-    package.loaded["opencode.state"] = nil
-    package.loaded["opencode.api"] = nil
-    package.loaded["opencode.project"] = nil
-    package.loaded["opencode.format"] = nil
+    package.loaded["opcode.commands"] = nil
+    package.loaded["opcode.state"] = nil
+    package.loaded["opcode.api"] = nil
+    package.loaded["opcode.project"] = nil
+    package.loaded["opcode.format"] = nil
 
-    local sstate = require("opencode.state")
+    local sstate = require("opcode.state")
     sstate.set_selected_session("sess-ln")
 
-    local api = require("opencode.api")
+    local api = require("opcode.api")
     local orig_append = api.append_prompt
     api.append_prompt = function(_, _, _, _, cb)
         cb({ message = "connection refused" }, nil)
     end
 
-    local proj = require("opencode.project")
+    local proj = require("opcode.project")
     local orig_get_root = proj.get_root
     proj.get_root = function() return "/home/user/project" end
 
@@ -733,7 +733,7 @@ h.run("send_line notifies error on API failure", function()
     vim.api.nvim_get_current_line = function() return "print('hi')" end
 
     local done = h.capture_notify()
-    local commands = require("opencode.commands")
+    local commands = require("opcode.commands")
     commands.send_line(h.valid_config())
 
     api.append_prompt = orig_append
@@ -748,20 +748,20 @@ end)
 
 h.run("send_line shows INFO notification with path on success", function()
     h.reset_plugin()
-    package.loaded["opencode.commands"] = nil
-    package.loaded["opencode.state"] = nil
-    package.loaded["opencode.api"] = nil
-    package.loaded["opencode.project"] = nil
-    package.loaded["opencode.format"] = nil
+    package.loaded["opcode.commands"] = nil
+    package.loaded["opcode.state"] = nil
+    package.loaded["opcode.api"] = nil
+    package.loaded["opcode.project"] = nil
+    package.loaded["opcode.format"] = nil
 
-    local sstate = require("opencode.state")
+    local sstate = require("opcode.state")
     sstate.set_selected_session("sess-abc")
 
-    local api = require("opencode.api")
+    local api = require("opcode.api")
     local orig_append = api.append_prompt
     api.append_prompt = function(_, _, _, _, cb) cb(nil, {}) end
 
-    local proj = require("opencode.project")
+    local proj = require("opcode.project")
     local orig_get_root = proj.get_root
     proj.get_root = function() return "/proj" end
 
@@ -778,7 +778,7 @@ h.run("send_line shows INFO notification with path on success", function()
     vim.api.nvim_get_current_line = function() return "return true" end
 
     local done = h.capture_notify()
-    local commands = require("opencode.commands")
+    local commands = require("opcode.commands")
     commands.send_line(h.valid_config())
 
     api.append_prompt = orig_append
@@ -793,20 +793,20 @@ end)
 
 h.run("send_line skips INFO notification when notify disabled", function()
     h.reset_plugin()
-    package.loaded["opencode.commands"] = nil
-    package.loaded["opencode.state"] = nil
-    package.loaded["opencode.api"] = nil
-    package.loaded["opencode.project"] = nil
-    package.loaded["opencode.format"] = nil
+    package.loaded["opcode.commands"] = nil
+    package.loaded["opcode.state"] = nil
+    package.loaded["opcode.api"] = nil
+    package.loaded["opcode.project"] = nil
+    package.loaded["opcode.format"] = nil
 
-    local sstate = require("opencode.state")
+    local sstate = require("opcode.state")
     sstate.set_selected_session("sess-abc")
 
-    local api = require("opencode.api")
+    local api = require("opcode.api")
     local orig_append = api.append_prompt
     api.append_prompt = function(_, _, _, _, cb) cb(nil, {}) end
 
-    local proj = require("opencode.project")
+    local proj = require("opcode.project")
     local orig_get_root = proj.get_root
     proj.get_root = function() return "/proj" end
 
@@ -823,7 +823,7 @@ h.run("send_line skips INFO notification when notify disabled", function()
     vim.api.nvim_get_current_line = function() return "hello" end
 
     local done = h.capture_notify()
-    local commands = require("opencode.commands")
+    local commands = require("opcode.commands")
     commands.send_line(h.valid_config({ notify = false }))
 
     api.append_prompt = orig_append
@@ -838,9 +838,9 @@ end)
 
 h.run("setup registers OpenCodeSendLine command", function()
     h.reset_plugin()
-    package.loaded["opencode.commands"] = nil
+    package.loaded["opcode.commands"] = nil
 
-    require("opencode").setup(h.valid_config())
+    require("opcode").setup(h.valid_config())
 
     local cmds = vim.api.nvim_get_commands({})
     assert(

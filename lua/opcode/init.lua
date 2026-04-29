@@ -1,32 +1,32 @@
 local M = {}
 
-local commands = require("opencode.commands")
+local commands = require("opcode.commands")
 local _config = nil
 local _setup_done = false
 
 local function validate(config)
    if type(config.port) ~= "number" or config.port < 1 or config.port > 65535 then
-      vim.notify("opencode.nvim: 'port' must be a number between 1 and 65535", vim.log.levels.ERROR)
+      vim.notify("opcode.nvim: 'port' must be a number between 1 and 65535", vim.log.levels.ERROR)
       return false
    end
    if type(config.hostname) ~= "string" or config.hostname == "" then
-      vim.notify("opencode.nvim: 'hostname' must be a non-empty string", vim.log.levels.ERROR)
+      vim.notify("opcode.nvim: 'hostname' must be a non-empty string", vim.log.levels.ERROR)
       return false
    end
    if type(config.command) ~= "string" or config.command == "" then
-      vim.notify("opencode.nvim: 'command' must be a non-empty string", vim.log.levels.ERROR)
+      vim.notify("opcode.nvim: 'command' must be a non-empty string", vim.log.levels.ERROR)
       return false
    end
    if not config.command:find("{port}", 1, true) then
-      vim.notify("opencode.nvim: 'command' must contain {port} placeholder", vim.log.levels.ERROR)
+      vim.notify("opcode.nvim: 'command' must contain {port} placeholder", vim.log.levels.ERROR)
       return false
    end
    if config.notify ~= nil and type(config.notify) ~= "boolean" then
-      vim.notify("opencode.nvim: 'notify' must be a boolean", vim.log.levels.ERROR)
+      vim.notify("opcode.nvim: 'notify' must be a boolean", vim.log.levels.ERROR)
       return false
    end
    if config.max_lines_in_prompt ~= nil and (type(config.max_lines_in_prompt) ~= "number" or config.max_lines_in_prompt < 1) then
-      vim.notify("opencode.nvim: 'max_lines_in_prompt' must be a positive number", vim.log.levels.ERROR)
+      vim.notify("opcode.nvim: 'max_lines_in_prompt' must be a positive number", vim.log.levels.ERROR)
       return false
    end
    return true
@@ -35,7 +35,7 @@ end
 local function check_version()
    local ver = vim.version()
    if vim.version.cmp(ver, { 0, 11 }) < 0 then
-      vim.notify("opencode.nvim: requires Neovim 0.11 or later", vim.log.levels.ERROR)
+      vim.notify("opcode.nvim: requires Neovim 0.11 or later", vim.log.levels.ERROR)
       return false
    end
    return true
@@ -77,7 +77,7 @@ end
 
 local function guard()
    if not _setup_done then
-      vim.notify("opencode.nvim: call setup() before using any command", vim.log.levels.ERROR)
+      vim.notify("opcode.nvim: call setup() before using any command", vim.log.levels.ERROR)
       return false
    end
    return true

@@ -4,7 +4,7 @@ package.path = root .. "/test/?.lua;" .. root .. "/lua/?.lua;" .. root .. "/lua/
 local h = require("test_helper")
 
 local function mock_api_list_sessions(response)
-   local api = require("opencode.api")
+   local api = require("opcode.api")
    local orig = api.list_sessions
    api.list_sessions = function(hostname, port, cb)
       cb(response.err, response.data)
@@ -21,11 +21,11 @@ end
 
 h.run("list_sessions calls api with hostname and port from config", function()
    h.reset_plugin()
-   package.loaded["opencode.commands"] = nil
-   package.loaded["opencode.state"] = nil
-   package.loaded["opencode.api"] = nil
+   package.loaded["opcode.commands"] = nil
+   package.loaded["opcode.state"] = nil
+   package.loaded["opcode.api"] = nil
 
-   local api = require("opencode.api")
+   local api = require("opcode.api")
    local captured_host, captured_port
    local orig_list = api.list_sessions
    api.list_sessions = function(host, port, cb)
@@ -37,7 +37,7 @@ h.run("list_sessions calls api with hostname and port from config", function()
    local orig_select = vim.ui.select
    vim.ui.select = function() end
 
-   local commands = require("opencode.commands")
+   local commands = require("opcode.commands")
    commands.list_sessions({ hostname = "192.168.1.1", port = 8080 })
 
    api.list_sessions = orig_list
@@ -49,11 +49,11 @@ end)
 
 h.run("list_sessions formats sessions and includes create option in picker", function()
    h.reset_plugin()
-   package.loaded["opencode.commands"] = nil
-   package.loaded["opencode.state"] = nil
-   package.loaded["opencode.api"] = nil
+   package.loaded["opcode.commands"] = nil
+   package.loaded["opcode.state"] = nil
+   package.loaded["opcode.api"] = nil
 
-   local api = require("opencode.api")
+   local api = require("opcode.api")
    local orig_list = api.list_sessions
    api.list_sessions = function(_, _, cb)
       cb(nil, {
@@ -68,7 +68,7 @@ h.run("list_sessions formats sessions and includes create option in picker", fun
       captured_items = items
    end
 
-   local commands = require("opencode.commands")
+   local commands = require("opcode.commands")
    commands.list_sessions({ hostname = "127.0.0.1", port = 4096 })
 
    api.list_sessions = orig_list
@@ -92,11 +92,11 @@ end)
 
 h.run("selecting a session stores its id in state", function()
    h.reset_plugin()
-   package.loaded["opencode.commands"] = nil
-   package.loaded["opencode.state"] = nil
-   package.loaded["opencode.api"] = nil
+   package.loaded["opcode.commands"] = nil
+   package.loaded["opcode.state"] = nil
+   package.loaded["opcode.api"] = nil
 
-   local api = require("opencode.api")
+   local api = require("opcode.api")
    local orig_list = api.list_sessions
    api.list_sessions = function(_, _, cb)
       cb(nil, {
@@ -109,8 +109,8 @@ h.run("selecting a session stores its id in state", function()
       on_choice(items[1], 1)
    end
 
-   local commands = require("opencode.commands")
-   local sstate = require("opencode.state")
+   local commands = require("opcode.commands")
+   local sstate = require("opcode.state")
    commands.list_sessions({ hostname = "127.0.0.1", port = 4096 })
 
    api.list_sessions = orig_list
@@ -124,11 +124,11 @@ end)
 
 h.run("selecting create new stores sentinel value in state", function()
    h.reset_plugin()
-   package.loaded["opencode.commands"] = nil
-   package.loaded["opencode.state"] = nil
-   package.loaded["opencode.api"] = nil
+   package.loaded["opcode.commands"] = nil
+   package.loaded["opcode.state"] = nil
+   package.loaded["opcode.api"] = nil
 
-   local api = require("opencode.api")
+   local api = require("opcode.api")
    local orig_list = api.list_sessions
    api.list_sessions = function(_, _, cb)
       cb(nil, {})
@@ -139,8 +139,8 @@ h.run("selecting create new stores sentinel value in state", function()
       on_choice(items[#items], #items)
    end
 
-   local commands = require("opencode.commands")
-   local sstate = require("opencode.state")
+   local commands = require("opcode.commands")
+   local sstate = require("opcode.state")
    commands.list_sessions({ hostname = "127.0.0.1", port = 4096 })
 
    api.list_sessions = orig_list
@@ -154,11 +154,11 @@ end)
 
 h.run("list_sessions notifies error when api call fails", function()
    h.reset_plugin()
-   package.loaded["opencode.commands"] = nil
-   package.loaded["opencode.state"] = nil
-   package.loaded["opencode.api"] = nil
+   package.loaded["opcode.commands"] = nil
+   package.loaded["opcode.state"] = nil
+   package.loaded["opcode.api"] = nil
 
-   local api = require("opencode.api")
+   local api = require("opcode.api")
    local orig_list = api.list_sessions
    api.list_sessions = function(_, _, cb)
       cb({ message = "Network error", code = 7 }, nil)
@@ -171,7 +171,7 @@ h.run("list_sessions notifies error when api call fails", function()
    end
 
    local done = h.capture_notify()
-   local commands = require("opencode.commands")
+   local commands = require("opcode.commands")
    commands.list_sessions({ hostname = "127.0.0.1", port = 4096 })
 
    api.list_sessions = orig_list
@@ -184,11 +184,11 @@ end)
 
 h.run("setup registers OpenCodeListSessions command", function()
    h.reset_plugin()
-   package.loaded["opencode.commands"] = nil
-   package.loaded["opencode.state"] = nil
-   package.loaded["opencode.api"] = nil
+   package.loaded["opcode.commands"] = nil
+   package.loaded["opcode.state"] = nil
+   package.loaded["opcode.api"] = nil
 
-   require("opencode").setup(h.valid_config())
+   require("opcode").setup(h.valid_config())
 
    local cmds = vim.api.nvim_get_commands({})
    assert(
