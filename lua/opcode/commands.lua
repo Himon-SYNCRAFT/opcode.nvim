@@ -5,63 +5,15 @@ local format = require("opcode.format")
 local project = require("opcode.project")
 local selection = require("opcode.selection")
 
-local function get_visual_selection(mode)
-	local bufnr = 0
-
-	local start_pos = vim.fn.getpos("'<")
-	local end_pos = vim.fn.getpos("'>")
-
-	local start_row, start_col = start_pos[2], start_pos[3]
-	local end_row, end_col = end_pos[2], end_pos[3]
-
-	-- normalize (gdy zaznaczone od dołu)
-	if start_row > end_row or (start_row == end_row and start_col > end_col) then
-		start_row, end_row = end_row, start_row
-		start_col, end_col = end_col, start_col
-	end
-
-	local lines = {}
-	local text = ""
-
-	-- LINE-WISE
-	if mode == "V" then
-		lines = vim.api.nvim_buf_get_lines(bufnr, start_row - 1, end_row, false)
-		text = table.concat(lines, "\n")
-	end
-
-	-- CHAR-WISE
-	if mode == "v" then
-		lines = vim.api.nvim_buf_get_text(bufnr, start_row - 1, start_col - 1, end_row - 1, end_col, {})
-		text = table.concat(lines, "\n")
-	end
-
-	-- BLOCK-WISE
-	if mode == "\22" then
-		local raw = vim.api.nvim_buf_get_lines(bufnr, start_row - 1, end_row, false)
-
-		for _, line in ipairs(raw) do
-			table.insert(lines, string.sub(line, start_col, end_col))
-		end
-
-		text = table.concat(lines, "\n")
-	end
-
-	return {
-		mode = mode, -- "v", "V", "\22"
-		start_line = start_row, -- np. 1
-		end_line = end_row, -- np. 12
-		start_col = start_col,
-		end_col = end_col,
-		lines = lines, -- { "line1", "line2", ... }
-		text = text, -- "line1\nline2"
-	}
-end
-
 function M.connect(config)
 	local cmd = config.command:gsub("{port}", tostring(config.port))
 	vim.fn.jobstart(cmd, {
 		detach = true,
 	})
+
+	vim.wait(2000)
+
+	M.create_session(config)
 end
 
 local function format_session(session)
@@ -101,6 +53,7 @@ local function default_title()
 end
 
 function M.create_session(config, title)
+	vim.notify("opcode.nvim: tutaj", vim.log.levels.INFO)
 	title = title or default_title()
 	api.create_session(config.hostname, config.port, title, function(err, result)
 		if err then
